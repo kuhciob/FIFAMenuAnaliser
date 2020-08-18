@@ -15,6 +15,7 @@ namespace FIFAImageAnaliser
 {
     class FIFAImage
     {
+        private 
         private Image fifaImage;
         private bool isValide;
         OpenCvSharp.Point mutchLoc;
