@@ -4,6 +4,7 @@ using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,6 @@ namespace FIFAImageAnaliser
 {
     class FIFAImage
     {
-        private string imagePath;
         private Image fifaImage;
         private bool isValide;
         OpenCvSharp.Point mutchLoc;
@@ -24,12 +24,19 @@ namespace FIFAImageAnaliser
 
         public FIFAImage(string imgpath)
         {
-            imagePath = imgpath;
             fifaImage=Image.FromFile(imgpath);
+        }
+        public FIFAImage(Image img)
+        {
+            fifaImage = (Image)img.Clone();
         }
         private string Verify(string patternpath)
         {
-            var image = new Mat(imagePath);
+            string tmpname = $"tmp{DateTime.Now.ToString("hh_mm_ss")}.png";
+            fifaImage.Save(tmpname);
+
+            var image = new Mat(tmpname);
+            File.Delete(tmpname);
             var template = new Mat(patternpath);
 
             var w = (image.Width - template.Width) + 1;
@@ -39,13 +46,14 @@ namespace FIFAImageAnaliser
 
             OpenCvSharp.Point minLoc, maxLoc;
 
-            var result = image.MatchTemplate(template, TemplateMatchModes.CCoeffNormed);
+            var result = image.MatchTemplate(template, TemplateMatchModes.CCorrNormed);
 
             result.MinMaxLoc(out minVal, out maxVal, out minLoc, out maxLoc);
             string VaryName = Path.GetFileNameWithoutExtension(patternpath);
-            if (maxVal == 1)
+            //MessageBox.Show($"Is it {VaryName}? : match={maxVal}");
+
+            if (maxVal >0.9999900)
             {
-                //MessageBox.Show($"It is {VaryName} maxLoc: {maxLoc}, maxVal: {maxVal}");
                 this.mutchLoc = maxLoc;
                 return patternpath;
             }
@@ -55,11 +63,12 @@ namespace FIFAImageAnaliser
         public void Analise()
         {
             const string customizePaternPath = AppConfig.CustomizePaternPath;
-            const string newItemPaternPath = AppConfig.NewItemPaternPath;
-
+            const string newItemPaternPath1 = AppConfig.NewItemPaternPath1;
+            const string newItemPaternPath2 = AppConfig.NewItemPaternPath2;
 
             string mutchedPuth = Verify(customizePaternPath);
-            mutchedPuth+= Verify(newItemPaternPath);
+            mutchedPuth+= Verify(newItemPaternPath1);
+            mutchedPuth += Verify(newItemPaternPath2);
             isValide = true;
 
             switch (mutchedPuth)
@@ -72,15 +81,24 @@ namespace FIFAImageAnaliser
                         ShowMutch();
                         break;
                     }                   
-                case newItemPaternPath:
+                case newItemPaternPath1:
                     {
                         algorithm = new NewItemAnalyser();
-                        Image pattern = Image.FromFile(newItemPaternPath);
+                        Image pattern = Image.FromFile(newItemPaternPath1);
                         DrawRectangle(fifaImage, mutchLoc.X, mutchLoc.Y, pattern.Width, pattern.Height, Color.Red);
                         ShowMutch();
 
                         break;
-                    }                   
+                    }
+                case newItemPaternPath2:
+                    {
+                        algorithm = new NewItemAnalyser();
+                        Image pattern = Image.FromFile(newItemPaternPath2);
+                        DrawRectangle(fifaImage, mutchLoc.X, mutchLoc.Y, pattern.Width, pattern.Height, Color.Red);
+                        ShowMutch();
+
+                        break;
+                    }
                 default:
                     isValide = false;
                     algorithm = new InvalidAnalyser();

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,22 +25,15 @@ namespace FIFAImageAnaliser
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 string filePath = openFileDialog1.FileName;
-                if (File.Exists(filePath))
+                Image image = ImageGeter.GetByFilePath(filePath);
+                if (image!=null)
                 {
-                    try
-                    {
-                        Image img = Image.FromFile(filePath);                                              
-                        pictureBox1.Image = img;
-                        Images.Add(new FIFAImage(filePath));
-                    }
-                    catch (OutOfMemoryException ex)
-                    {
-                        MessageBox.Show("File is not a image");
-                    }
+                    pictureBox1.Image = image;
+                    Images.Add(new FIFAImage(image));
                 }
                 else
                 {
-                    MessageBox.Show("File dosen`t exist");
+                    MessageBox.Show("File dosen`t exist or not image");
                 }
 
                 
@@ -54,6 +48,9 @@ namespace FIFAImageAnaliser
 
         private void button3_Click(object sender, EventArgs e)
         {
+            Image image = ImageGeter.GetFromServer(AppConfig.APIUrl);
+            this.pictureBox1.Image = image;
+            Images.Add(new FIFAImage(image));
 
         }
     }
