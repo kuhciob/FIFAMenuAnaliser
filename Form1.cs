@@ -28,7 +28,7 @@ namespace FIFAImageAnaliser
                 {
                     try
                     {
-                        Image img = Image.FromFile(filePath);
+                        Image img = Image.FromFile(filePath);                                              
                         pictureBox1.Image = img;
                         Images.Add(new FIFAImage(filePath));
                     }
@@ -50,6 +50,11 @@ namespace FIFAImageAnaliser
         {
             foreach (var img in Images)
                 img.Analise();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
