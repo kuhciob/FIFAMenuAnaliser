@@ -7,11 +7,11 @@ using System.Windows.Forms;
 
 namespace FIFAImageAnaliser.Analysis
 {
-    class CustomizeAnalyser : IAnalysisStratege
+    class InvalidAnalyser : IAnalysisStratege
     {
         public void AnalyseImage()
         {
-            MessageBox.Show("It is Customize tab");
+            MessageBox.Show("Image is invalide");
         }
     }
 }

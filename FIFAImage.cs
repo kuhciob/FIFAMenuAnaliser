@@ -1,4 +1,5 @@
 ﻿
+using FIFAImageAnaliser.Analysis;
 using OpenCvSharp;
 using System;
 using System.Collections.Generic;
@@ -16,27 +17,38 @@ namespace FIFAImageAnaliser
         private string imagePath;
         private bool isValide;
         OpenCvSharp.Point minLoc;
-        private IAnalysisrStratege algorithm;
+        private IAnalysisStratege algorithm;
 
 
         public FIFAImage(string imgpath)
         {
             imagePath = imgpath;
         }
-        public bool Verify()
+        public void Analise()
         {
-            string patern1Path = "images\\patterns\\CUSTOMIZE.png";
-            string patern2Path = "images\\patterns\\NewItem.png";
+            const string customizePaternPath = "images\\patterns\\CUSTOMIZE.png";
+            const string newItemPaternPath = "images\\patterns\\NewItem.png";
 
 
-            string mutchedPuth = Verify(patern1Path);
-            mutchedPuth+= Verify(patern1Path);
+            string mutchedPuth = Verify(customizePaternPath);
+            mutchedPuth+= Verify(newItemPaternPath);
+            isValide = true;
 
             switch (mutchedPuth)
             {
-                case 
+                case customizePaternPath:
+                    algorithm = new CustomizeAnalyser();
+                    break;
+                case newItemPaternPath:
+                    algorithm = new NewItemAnalyser();
+                    break;
+                default:
+                    isValide = false;
+                    algorithm = new InvalidAnalyser();
+                    break;
             }
-            return isValide;
+
+            algorithm.AnalyseImage();
         }
         private string Verify(string patternpath)
         {

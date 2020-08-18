@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace FIFAImageAnaliser
 {
-    interface IAnalysisrStratege
+    interface IAnalysisStratege
     {
+        void AnalyseImage();
+
     }
 }

@@ -30,7 +30,6 @@ namespace FIFAImageAnaliser
                     {
                         Image img = Image.FromFile(filePath);
                         pictureBox1.Image = img;
-                        Images = new List<FIFAImage>();
                         Images.Add(new FIFAImage(filePath));
                     }
                     catch (OutOfMemoryException ex)
@@ -50,7 +49,7 @@ namespace FIFAImageAnaliser
         private void button2_Click(object sender, EventArgs e)
         {
             foreach (var img in Images)
-                img.Verify();
+                img.Analise();
         }
     }
 }
